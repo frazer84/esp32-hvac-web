@@ -1,4 +1,3 @@
-import "dotenv/config";
 import React, { useEffect } from "react";
 import { SafeAreaView, Text, View } from "react-native";
 import { Button, PaperProvider, Snackbar } from "react-native-paper";
@@ -6,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 import { IData } from "./types";
+import * as SecureStore from "expo-secure-store";
 
 const firebaseConfig = {
   databaseURL: process.env.FIREBASE_RTDB_URL,
@@ -34,13 +34,19 @@ function HomeScreen() {
   const [snackbarVisible, setSnackbarVisible] = React.useState(false);
 
   useEffect(
-    () =>
+    () => {
       onValue(dataRef, (snapshot) => {
         const data = snapshot.val();
         setData(data);
-      }),
+      });
+      SecureStore.getItemAsync("firebase-db-url").then((url) => ))
+    },
     []
   );
+
+  const saveFirebaseDatabaseUrl = async (url: string) => {
+    await SecureStore.setItemAsync("firebase-db-url", url);
+  };
 
   const sendCommand = (command: string, temperature?: number) => {
     const commandRef = ref(db, "/command");
